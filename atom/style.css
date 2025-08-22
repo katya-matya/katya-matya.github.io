@@ -1,0 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0a0a2a, #1a1a40);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+h1 {
+    font-size: 2.2rem;
+    text-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#gameCanvas {
+    background: transparent;
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+}
+
+#controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#done-btn {
+    padding: 12px 35px;
+    font-size: 1.2rem;
+    background: linear-gradient(to right, #4a00e0, #8e2de2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(142, 45, 226, 0.6);
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+#done-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(142, 45, 226, 0.8);
+}
+
+#electron-counter {
+    font-size: 1rem;
+    text-shadow: 0 0 5px rgba(100, 200, 255, 0.8);
+}
+
+.level-info {
+    position: absolute;
+    font-size: 1rem;
+    color: white;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.pulse {
+    animation: pulse 0.5s;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    #done-btn {
+        padding: 10px 25px;
+        font-size: 1rem;
+    }
+}
