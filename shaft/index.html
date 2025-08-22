@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ProTanki GAME</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="hud">Points: <span id="score">0</span> / <span id="total">47</span></div>
+    <div id="field"></div>
+    <div id="cannon">
+        <img src="assets/Shaft_M3.png" alt="Shaft M3">
+    </div>
+    <div id="crosshair">
+        <div id="reticle"><img src="assets/Shaft_M3_Crosshair.png" alt="crosshair"></div>
+    </div>
+    <div id="winModal">
+        <div class="modal-card">
+            <h2>Congratulations!</h2>
+            <p>You knocked out all the balls.</p>
+            <button class="btn" id="finishBtn">Finish</button>
+        </div>
+    </div>
+    <audio id="shotAudio" src="assets/Shaft_shot.mp3"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
