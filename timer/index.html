@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 8vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            cursor: none;
+            position: relative;
+        }
+        
+        #timer {
+            text-shadow: 0 0 10px #0f0;
+            font-variant-numeric: tabular-nums;
+            position: relative;
+            z-index: 2;
+        }
+
+        .digit {
+            display: inline-block;
+            transition: opacity 0.05s, transform 0.05s;
+        }
+
+        .cursor {
+            animation: blink 0.8s infinite;
+            opacity: 0.9;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        /* Сканирующая линия - случайные вспышки */
+        .scan-line {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, 
+                transparent 0%, 
+                #0f0 20%, 
+                #0f0 80%, 
+                transparent 100%);
+            box-shadow: 0 0 15px #0f0;
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.1s;
+        }
+
+        /* Шум */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.15;
+            animation: noiseShift 0.05s infinite;
+            z-index: 1;
+        }
+
+        @keyframes noiseShift {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(2px,1px); }
+        }
+
+        /* Мерцание экрана */
+        .screen-flicker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.05s;
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="scan-line" id="scanLine"></div>
+    <div class="screen-flicker" id="screenFlicker"></div>
+    
+    <div id="timer">
+        <span id="numbers"></span><span class="cursor">|</span>
+    </div>
+
+    <script>
+        let seconds = 50000000; // Это значение будет заменено сервером
+        const numbersElement = document.getElementById('numbers');
+        const screenFlicker = document.getElementById('screenFlicker');
+        const scanLine = document.getElementById('scanLine');
+        
+        // Инициализация цифр
+        function initDigits() {
+            const formatted = seconds.toLocaleString();
+            numbersElement.innerHTML = '';
+            
+            for (let i = 0; i < formatted.length; i++) {
+                const span = document.createElement('span');
+                span.className = 'digit';
+                span.textContent = formatted[i];
+                numbersElement.appendChild(span);
+            }
+        }
+        
+        // Случайные вспышки линии
+        function randomScanFlash() {
+            // Случайная позиция по вертикали
+            const randomTop = Math.random() * 100;
+            scanLine.style.top = randomTop + '%';
+            
+            // Случайная яркость и толщина
+            const brightness = 0.3 + Math.random() * 0.7;
+            const height = 1 + Math.random() * 3;
+            scanLine.style.opacity = brightness.toString();
+            scanLine.style.height = height + 'px';
+            
+            // Случайная длительность вспышки (50-300ms)
+            const duration = Math.random() * 250 + 50;
+            
+            // Показываем линию
+            scanLine.style.opacity = brightness.toString();
+            
+            // Убираем через случайное время
+            setTimeout(() => {
+                scanLine.style.opacity = '0';
+            }, duration);
+            
+            // Следующая вспышка через случайный интервал (100-2000ms)
+            const nextDelay = Math.random() * 1900 + 100;
+            setTimeout(randomScanFlash, nextDelay);
+        }
+        
+        // Быстрое мерцание цифр
+        function glitchDigits() {
+            const digits = numbersElement.querySelectorAll('.digit');
+            
+            // Частые глюки (60% шанс)
+            if (Math.random() < 0.6) {
+                const randomDigit = Math.floor(Math.random() * digits.length);
+                const originalChar = digits[randomDigit].textContent;
+                
+                // Быстрое потухание
+                digits[randomDigit].style.opacity = '0.1';
+                
+                // Частая подмена символов (50% шанс)
+                if (Math.random() < 0.5) {
+                    const glitchChars = ['8', '�', '�', '#', '*', '0', '1', ' ', '�'];
+                    digits[randomDigit].textContent = glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                }
+                
+                // Быстрое восстановление
+                setTimeout(() => {
+                    digits[randomDigit].style.opacity = '1';
+                    digits[randomDigit].textContent = originalChar;
+                }, Math.random() * 80 + 20);
+            }
+            
+            // Случайное смещение (25% шанс)
+            if (Math.random() < 0.25) {
+                numbersElement.style.transform = `translate(${Math.random() * 8 - 4}px, ${Math.random() * 6 - 3}px)`;
+                setTimeout(() => {
+                    numbersElement.style.transform = '';
+                }, 50);
+            }
+        }
+        
+        // Обновление таймера
+        function updateTimer() {
+            seconds++;
+            const formatted = seconds.toLocaleString();
+            const digits = numbersElement.querySelectorAll('.digit');
+            
+            // Обновляем цифры
+            for (let i = 0; i < formatted.length; i++) {
+                if (digits[i]) {
+                    digits[i].textContent = formatted[i];
+                }
+            }
+        }
+        
+        // Быстрое мерцание экрана
+        function quickScreenFlicker() {
+            if (Math.random() < 0.4) { // 40% шанс
+                screenFlicker.style.opacity = '0.02';
+                setTimeout(() => {
+                    screenFlicker.style.opacity = '0';
+                }, 20);
+            }
+        }
+        
+        // Инициализация
+        initDigits();
+        
+        // Запускаем случайные вспышки линии
+        randomScanFlash();
+        
+        // Быстрые глюки цифр каждые 50-150ms
+        setInterval(glitchDigits, Math.random() * 100 + 50);
+        
+        // Быстрое мерцание экрана каждые 100-300ms
+        setInterval(quickScreenFlicker, Math.random() * 200 + 100);
+        
+        // Основной таймер
+        setInterval(updateTimer, 1000);
+        
+        // Скрытие курсора
+        document.addEventListener('mousemove', () => {
+            document.body.style.cursor = 'none';
+        });
+    </script>
+</body>
+</html>
+
+<!-- Вариант реализации
+<?php
+$start = 1676332800; // 14.02.2023 в Unix timestamp
+$now = time();
+$seconds = $now - $start;
+
+header('Content-Type: text/html; charset=utf-8');
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        ...
+    </style>
+</head>
+<body>
+    <div id="timer"><?php echo number_format($seconds); ?></div>
+    
+    <script>
+        // Клиентский JS только для обновления, без данных о дате
+        let seconds = <?php echo $seconds; ?>;
+        ........
+    </script>
+</body>
+</html>
+-->
